@@ -1,9 +1,9 @@
 name: seasonal_app_icon
 description: "A Flutter plugin for dynamically changing app icons based on seasonal events (Christmas, Black Friday, etc.). Supports light/dark mode variants."
 version: 0.0.1
-homepage: https://github.com/user/seasonal_app_icon
-repository: https://github.com/user/seasonal_app_icon
-issue_tracker: https://github.com/user/seasonal_app_icon/issues
+homepage: https://github.com/AbanoubFakheryMakram/seasonal_app_icon
+repository: https://github.com/AbanoubFakheryMakram/seasonal_app_icon
+issue_tracker: https://github.com/AbanoubFakheryMakram/seasonal_app_icon/issues
 topics:
   - app-icon
   - dynamic-icon
