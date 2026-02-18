@@ -1,3 +1,9 @@
+## 0.0.2
+
+* Improve API/docs clarity for `IconChangeResult` and method return types
+* Document platform response contract and known limitations
+* Improve example status logging for success/failure icon change results
+
 ## 0.0.1
 
 * Initial release
