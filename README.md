@@ -15,7 +15,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  seasonal_app_icon: ^0.0.1
+  seasonal_app_icon: ^0.0.3
 ```
 
 ## Usage

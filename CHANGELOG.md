@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Update README installation snippet to `seasonal_app_icon: ^0.0.3`
+
 ## 0.0.2
 
 * Improve API/docs clarity for `IconChangeResult` and method return types
