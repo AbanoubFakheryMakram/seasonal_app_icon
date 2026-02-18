@@ -26,7 +26,10 @@ abstract class SeasonalAppIconPlatform extends PlatformInterface {
   /// Sets the app icon to the specified icon name.
   ///
   /// [iconName] - The name of the icon to set. Pass `null` to reset to default.
-  /// Returns a map with 'success' boolean and optional 'error' message.
+  /// Returns a map containing:
+  /// - `success` (`bool`)
+  /// - `iconName` (`String?`) for successful updates
+  /// - `error` (`String?`) or `errorMessage` (`String?`) for failed updates
   Future<Map<String, dynamic>> setIcon(String? iconName) {
     throw UnimplementedError('setIcon() has not been implemented.');
   }
@@ -40,7 +43,9 @@ abstract class SeasonalAppIconPlatform extends PlatformInterface {
 
   /// Checks if the app supports alternate icons.
   Future<bool> supportsAlternateIcons() {
-    throw UnimplementedError('supportsAlternateIcons() has not been implemented.');
+    throw UnimplementedError(
+      'supportsAlternateIcons() has not been implemented.',
+    );
   }
 
   /// Gets a list of available alternate icon names.

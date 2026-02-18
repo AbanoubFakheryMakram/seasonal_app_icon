@@ -39,9 +39,7 @@ class _MyAppState extends State<MyApp> {
     // Set up callback
     _seasonalAppIcon.onIconChanged = (result) {
       setState(() {
-        _statusMessage = result.success
-            ? 'Icon changed to: ${result.iconName ?? "default"}'
-            : 'Error: ${result.errorMessage}';
+        _statusMessage = _formatChangeResult(result);
       });
     };
 
@@ -70,22 +68,30 @@ class _MyAppState extends State<MyApp> {
       if (result.success) {
         final activeIcon = _seasonalAppIcon.getActiveSeasonalIcon();
         _statusMessage = activeIcon != null
-            ? 'Applied ${activeIcon.eventName} icon'
-            : 'No seasonal icon active, reset to default';
+            ? 'Applied ${activeIcon.eventName} icon - ${_formatChangeResult(result)}'
+            : 'No seasonal icon active, reset to default - ${_formatChangeResult(result)}';
       } else {
-        _statusMessage = 'Error: ${result.errorMessage}';
+        _statusMessage = _formatChangeResult(result);
       }
     });
   }
 
   Future<void> _setIcon(String iconName) async {
-    await _seasonalAppIcon.setIcon(iconName);
+    final result = await _seasonalAppIcon.setIcon(iconName);
     await _refreshState();
+    if (!mounted) return;
+    setState(() {
+      _statusMessage = _formatChangeResult(result);
+    });
   }
 
   Future<void> _resetToDefault() async {
-    await _seasonalAppIcon.resetToDefaultIcon();
+    final result = await _seasonalAppIcon.resetToDefaultIcon();
     await _refreshState();
+    if (!mounted) return;
+    setState(() {
+      _statusMessage = _formatChangeResult(result);
+    });
   }
 
   @override
@@ -93,7 +99,10 @@ class _MyAppState extends State<MyApp> {
     final activeSeasonalIcon = _seasonalAppIcon.getActiveSeasonalIcon();
 
     return MaterialApp(
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Seasonal App Icon'),
@@ -111,9 +120,14 @@ class _MyAppState extends State<MyApp> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Status', style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        'Status',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 8),
-                      Text('Supports Alternate Icons: $_supportsAlternateIcons'),
+                      Text(
+                        'Supports Alternate Icons: $_supportsAlternateIcons',
+                      ),
                       Text('Current Icon: ${_currentIcon ?? "default"}'),
                       if (activeSeasonalIcon != null)
                         Text(
@@ -124,7 +138,11 @@ class _MyAppState extends State<MyApp> {
                         const SizedBox(height: 8),
                         Text(
                           _statusMessage,
-                          style: TextStyle(color: _statusMessage.startsWith('Error') ? Colors.red : Colors.blue),
+                          style: TextStyle(
+                            color: _statusMessage.startsWith('Error')
+                                ? Colors.red
+                                : Colors.blue,
+                          ),
                         ),
                       ],
                     ],
@@ -154,18 +172,28 @@ class _MyAppState extends State<MyApp> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Configured Seasonal Icons', style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        'Configured Seasonal Icons',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 8),
                       ..._seasonalAppIcon.seasonalIcons.map(
                         (icon) => ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Icon(
-                            icon.isActive ? Icons.check_circle : Icons.circle_outlined,
+                            icon.isActive
+                                ? Icons.check_circle
+                                : Icons.circle_outlined,
                             color: icon.isActive ? Colors.green : Colors.grey,
                           ),
                           title: Text(icon.eventName),
-                          subtitle: Text('${_formatDate(icon.startDate)} - ${_formatDate(icon.endDate)}'),
-                          trailing: ElevatedButton(onPressed: () => _setIcon(icon.iconName), child: const Text('Set')),
+                          subtitle: Text(
+                            '${_formatDate(icon.startDate)} - ${_formatDate(icon.endDate)}',
+                          ),
+                          trailing: ElevatedButton(
+                            onPressed: () => _setIcon(icon.iconName),
+                            child: const Text('Set'),
+                          ),
                         ),
                       ),
                     ],
@@ -182,13 +210,21 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Available Platform Icons', style: Theme.of(context).textTheme.titleMedium),
+                        Text(
+                          'Available Platform Icons',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: _availableIcons
-                              .map((icon) => ActionChip(label: Text(icon), onPressed: () => _setIcon(icon)))
+                              .map(
+                                (icon) => ActionChip(
+                                  label: Text(icon),
+                                  onPressed: () => _setIcon(icon),
+                                ),
+                              )
                               .toList(),
                         ),
                       ],
@@ -204,5 +240,12 @@ class _MyAppState extends State<MyApp> {
 
   String _formatDate(DateTime date) {
     return '${date.month}/${date.day}';
+  }
+
+  String _formatChangeResult(IconChangeResult result) {
+    if (result.success) {
+      return 'IconChangeResult.success(iconName: ${result.iconName ?? "default"})';
+    }
+    return 'IconChangeResult.failure(error: ${result.errorMessage ?? "Unknown error"})';
   }
 }

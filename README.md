@@ -46,17 +46,20 @@ seasonalIcon.configure([
 ]);
 
 // Apply the appropriate icon based on current date
-await seasonalIcon.applySeasonalIcon();
+final result = await seasonalIcon.applySeasonalIcon();
+if (!result.success) {
+  debugPrint('Icon update failed: ${result.errorMessage}');
+}
 ```
 
 ### Manual Icon Control
 
 ```dart
 // Set a specific icon
-await seasonalIcon.setIcon('christmas');
+final setResult = await seasonalIcon.setIcon('christmas');
 
 // Reset to default icon
-await seasonalIcon.resetToDefaultIcon();
+final resetResult = await seasonalIcon.resetToDefaultIcon();
 
 // Get current icon name
 final currentIcon = await seasonalIcon.getCurrentIcon();
@@ -242,13 +245,13 @@ Add activity-aliases for each alternate icon:
 
 | Method                                  | Description                      |
 |-----------------------------------------|----------------------------------|
-| `configure(List<SeasonalIcon>)`         | Set up seasonal icons            |
-| `applySeasonalIcon({bool? isDarkMode})` | Apply icon based on current date |
-| `setIcon(String)`                       | Set a specific icon              |
-| `resetToDefaultIcon()`                  | Reset to default icon            |
-| `getCurrentIcon()`                      | Get current icon name            |
-| `supportsAlternateIcons()`              | Check platform support           |
-| `getAvailableIcons()`                   | List available icons             |
+| `configure(List<SeasonalIcon>) -> void`                         | Set up seasonal icons            |
+| `applySeasonalIcon({bool? isDarkMode}) -> Future<IconChangeResult>` | Apply icon based on current date |
+| `setIcon(String) -> Future<IconChangeResult>`                  | Set a specific icon              |
+| `resetToDefaultIcon() -> Future<IconChangeResult>`             | Reset to default icon            |
+| `getCurrentIcon() -> Future<String?>`                          | Get current icon name            |
+| `supportsAlternateIcons() -> Future<bool>`                     | Check platform support           |
+| `getAvailableIcons() -> Future<List<String>>`                  | List available icons             |
 
 ## Quick Reference
 
@@ -257,10 +260,41 @@ Add activity-aliases for each alternate icon:
 | iOS      | `ios/Runner/*.png` | Key name in `CFBundleAlternateIcons`     |
 | Android  | `res/mipmap-*/`    | Activity-alias name (e.g., `.christmas`) |
 
-## Notes
+## Platform Response Contract
+
+`IconChangeResult.fromMap` expects these keys from platform implementations:
+
+- `success` (`bool`)
+- `iconName` (`String?`) for successful responses
+- `error` (`String?`) or `errorMessage` (`String?`) for failure responses
+
+Example:
+
+```dart
+{
+  'success': true,
+  'iconName': 'christmas',
+}
+```
+
+```dart
+{
+  'success': false,
+  'error': 'Alternate icons are not supported on this device',
+}
+```
+
+## Date Range Semantics
+
+- `SeasonalIcon.startDate` and `SeasonalIcon.endDate` are inclusive.
+- The comparison is moment-based (`DateTime`), not automatic end-of-day handling.
+- If you want "active through end of day", pass an `endDate` at the end of that day (for example, `23:59:59.999`).
+
+## Known Limitations
 
 - **iOS**: Icon changes show a system alert (iOS limitation)
 - **Android**: Icon changes may take a moment to reflect in the launcher
+- **macOS/Windows**: Alternate app icon switching is not supported by this plugin
 - Icons must be pre-configured in native projects before use
 - Pass icon **identifiers** in Dart code, not file paths
 
@@ -289,4 +323,3 @@ If you find this plugin helpful, consider:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-

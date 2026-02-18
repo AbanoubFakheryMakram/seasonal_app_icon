@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockSeasonalAppIconPlatform
     with MockPlatformInterfaceMixin
     implements SeasonalAppIconPlatform {
-
   @override
   Future<Map<String, dynamic>> setIcon(String? iconName) =>
       Future.value({'success': true, 'iconName': iconName});
@@ -24,7 +23,8 @@ class MockSeasonalAppIconPlatform
 }
 
 void main() {
-  final SeasonalAppIconPlatform initialPlatform = SeasonalAppIconPlatform.instance;
+  final SeasonalAppIconPlatform initialPlatform =
+      SeasonalAppIconPlatform.instance;
 
   test('$MethodChannelSeasonalAppIcon is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelSeasonalAppIcon>());
@@ -91,5 +91,15 @@ void main() {
 
     expect(icon.getIconForBrightness(isDarkMode: true), 'christmas');
     expect(icon.getIconForBrightness(isDarkMode: false), 'christmas');
+  });
+
+  test('IconChangeResult.fromMap reads errorMessage fallback', () {
+    final result = IconChangeResult.fromMap({
+      'success': false,
+      'errorMessage': 'Custom error',
+    });
+
+    expect(result.success, false);
+    expect(result.errorMessage, 'Custom error');
   });
 }

@@ -16,6 +16,8 @@ class SeasonalIcon {
   final DateTime startDate;
 
   /// The end date when this icon should stop being active.
+  ///
+  /// This boundary is inclusive (`date == endDate` is treated as active).
   final DateTime endDate;
 
   /// Optional light mode icon name.
@@ -46,14 +48,14 @@ class SeasonalIcon {
   /// Checks if this seasonal icon is currently active based on the current date.
   bool get isActive {
     final now = DateTime.now();
-    return now.isAfter(startDate) && now.isBefore(endDate) ||
+    return (now.isAfter(startDate) && now.isBefore(endDate)) ||
         now.isAtSameMomentAs(startDate) ||
         now.isAtSameMomentAs(endDate);
   }
 
   /// Checks if this seasonal icon is active for a given date.
   bool isActiveOn(DateTime date) {
-    return date.isAfter(startDate) && date.isBefore(endDate) ||
+    return (date.isAfter(startDate) && date.isBefore(endDate)) ||
         date.isAtSameMomentAs(startDate) ||
         date.isAtSameMomentAs(endDate);
   }
